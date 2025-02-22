@@ -117,49 +117,53 @@ const OrderForm = () => {
     }
   };
 
-  // PersonalInfoStep component in OrderForm.jsx
+// Nel file OrderForm.jsx, sostituisci il componente PersonalInfoStep con questo:
+
 const PersonalInfoStep = () => {
   return (
     <div className="form-step personal-info">
       <h2>Informazioni Personali</h2>
-      <div className="input-group">
+      <div className="input-container">
         <input
           type="text"
           placeholder="Nome"
           value={formData.name}
           onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-          required
-          autoComplete="off"
-          autoCorrect="off"
-          autoCapitalize="none"
-          spellCheck="false"
+          onKeyPress={(e) => {
+            if (e.key === 'Enter') {
+              e.preventDefault();
+            }
+          }}
+          inputMode="text"
         />
-      </div>
-      <div className="input-group">
         <input
           type="text"
           placeholder="Cognome"
           value={formData.surname}
           onChange={(e) => setFormData(prev => ({ ...prev, surname: e.target.value }))}
-          required
-          autoComplete="off"
-          autoCorrect="off"
-          autoCapitalize="none"
-          spellCheck="false"
+          onKeyPress={(e) => {
+            if (e.key === 'Enter') {
+              e.preventDefault();
+            }
+          }}
+          inputMode="text"
         />
-      </div>
-      <div className="input-group">
         <input
           type="number"
           placeholder="Numero Tavolo"
           value={formData.tableNumber}
           onChange={(e) => setFormData(prev => ({ ...prev, tableNumber: e.target.value }))}
-          required
-          pattern="[0-9]*"
+          onKeyPress={(e) => {
+            if (e.key === 'Enter') {
+              e.preventDefault();
+            }
+          }}
           inputMode="numeric"
+          pattern="[0-9]*"
         />
       </div>
       <button 
+        type="button"
         className="button-primary"
         onClick={() => setCurrentStep('menu')}
         disabled={!formData.name || !formData.surname || !formData.tableNumber}
