@@ -400,3 +400,30 @@ h2 {
     box-shadow: none;
   }
 }
+.personal-info form {
+  margin: 0;
+  padding: 0;
+}
+
+input {
+  /* Mantieni la tastiera aperta su iOS */
+  user-select: text;
+  -webkit-user-select: text;
+  /* Previeni lo zoom su focus in iOS */
+  font-size: 16px !important;
+}
+
+/* Assicurati che il form non faccia azioni indesiderate */
+form {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Ottimizzazioni per dispositivi mobili */
+@media (max-width: 768px) {
+  input {
+    /* Migliora la leggibilità su mobile */
+    padding: 15px;
+    /* Assicurati che il testo sia ben visibile */
+    font-size: 16px !important;
+  }
+}
