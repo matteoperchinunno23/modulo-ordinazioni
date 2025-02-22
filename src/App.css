@@ -1,20 +1,20 @@
 /* App.css */
 .app {
   min-height: 100vh;
-  background-color: #F9F5F2;
+  background-color: #f8fafc;
 }
 
 header {
-  background-color: #FF7E45;
+  background-color: #2563eb;
   color: white;
-  padding: 24px;
+  padding: 20px;
   text-align: center;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 h1 {
   margin: 0;
-  font-size: 2rem;
+  font-size: 1.8rem;
   font-weight: 600;
 }
 
@@ -30,7 +30,7 @@ main {
   }
 
   h1 {
-    font-size: 1.6rem;
+    font-size: 1.5rem;
   }
 
   main {

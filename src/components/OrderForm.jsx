@@ -64,7 +64,7 @@ const OrderForm = () => {
     items: {},
   });
 
-  const [currentStep, setCurrentStep] = useState('personal'); // personal, menu, summary
+  const [currentStep, setCurrentStep] = useState('personal');
 
   const updateQuantity = (itemId, delta) => {
     setFormData(prev => {
@@ -93,75 +93,80 @@ const OrderForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      // Qui inseriremo la logica per Airtable
+      // Qui inserire la logica per Airtable
       const orderData = {
         ...formData,
         total: calculateTotal(),
-        orderDate: new Date().toISOString(),
+        orderDate: new Date().toISOString()
       };
       
-      console.log('Invio ordine:', orderData);
-      // Dopo il successo, potresti voler resettare il form o mostrare un messaggio
+      console.log('Ordine inviato:', orderData);
       alert('Ordine inviato con successo!');
+      
+      // Reset del form
+      setFormData({
+        name: '',
+        surname: '',
+        tableNumber: '',
+        items: {},
+      });
+      setCurrentStep('personal');
     } catch (error) {
       console.error('Errore nell\'invio dell\'ordine:', error);
       alert('Errore nell\'invio dell\'ordine. Riprova.');
     }
   };
 
-// Nel tuo OrderForm.jsx, sostituisci il componente PersonalInfoStep con questo:
-
+  // PersonalInfoStep component in OrderForm.jsx
 const PersonalInfoStep = () => {
-  const handleSubmit = (e) => {
-    e.preventDefault(); // Previene il comportamento di default del form
-  };
-
   return (
-    <form onSubmit={handleSubmit} className="form-step personal-info">
+    <div className="form-step personal-info">
       <h2>Informazioni Personali</h2>
       <div className="input-group">
         <input
           type="text"
-          inputMode="text"
           placeholder="Nome"
           value={formData.name}
           onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-          autoCapitalize="words"
+          required
           autoComplete="off"
           autoCorrect="off"
+          autoCapitalize="none"
+          spellCheck="false"
         />
       </div>
       <div className="input-group">
         <input
           type="text"
-          inputMode="text"
           placeholder="Cognome"
           value={formData.surname}
           onChange={(e) => setFormData(prev => ({ ...prev, surname: e.target.value }))}
-          autoCapitalize="words"
+          required
           autoComplete="off"
           autoCorrect="off"
+          autoCapitalize="none"
+          spellCheck="false"
         />
       </div>
       <div className="input-group">
         <input
-          type="tel"
-          inputMode="numeric"
-          pattern="[0-9]*"
+          type="number"
           placeholder="Numero Tavolo"
           value={formData.tableNumber}
           onChange={(e) => setFormData(prev => ({ ...prev, tableNumber: e.target.value }))}
+          required
+          pattern="[0-9]*"
+          inputMode="numeric"
         />
       </div>
       <button 
-        type="button"
         className="button-primary"
         onClick={() => setCurrentStep('menu')}
         disabled={!formData.name || !formData.surname || !formData.tableNumber}
       >
         Continua al Menu
       </button>
-    </form>
+    </div>
   );
 };
 
@@ -180,8 +185,8 @@ const PersonalInfoStep = () => {
                   </div>
                   <div className="quantity-controls">
                     <button 
-                      type="button" 
-                      className="quantity-button minus"
+                      type="button"
+                      className="quantity-button"
                       onClick={() => updateQuantity(item.id, -1)}
                       disabled={!formData.items[item.id]}
                     >
@@ -191,8 +196,8 @@ const PersonalInfoStep = () => {
                       {formData.items[item.id] || 0}
                     </span>
                     <button 
-                      type="button" 
-                      className="quantity-button plus"
+                      type="button"
+                      className="quantity-button"
                       onClick={() => updateQuantity(item.id, 1)}
                     >
                       +
@@ -206,12 +211,14 @@ const PersonalInfoStep = () => {
       </div>
       <div className="navigation-buttons">
         <button 
+          type="button"
           className="button-secondary"
           onClick={() => setCurrentStep('personal')}
         >
           Indietro
         </button>
         <button 
+          type="button"
           className="button-primary"
           onClick={() => setCurrentStep('summary')}
           disabled={Object.values(formData.items).every(v => !v)}
@@ -266,12 +273,14 @@ const PersonalInfoStep = () => {
 
         <div className="navigation-buttons">
           <button 
+            type="button"
             className="button-secondary"
             onClick={() => setCurrentStep('menu')}
           >
             Modifica Ordine
           </button>
           <button 
+            type="button"
             className="button-primary"
             onClick={handleSubmit}
           >
@@ -283,11 +292,11 @@ const PersonalInfoStep = () => {
   };
 
   return (
-    <form className="order-form" onSubmit={(e) => e.preventDefault()}>
+    <div className="order-form">
       {currentStep === 'personal' && <PersonalInfoStep />}
       {currentStep === 'menu' && <MenuStep />}
       {currentStep === 'summary' && <SummaryStep />}
-    </form>
+    </div>
   );
 };
 
