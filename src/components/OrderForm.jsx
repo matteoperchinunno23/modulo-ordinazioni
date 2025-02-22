@@ -109,45 +109,59 @@ const OrderForm = () => {
     }
   };
 
-  const PersonalInfoStep = () => (
-    <div className="form-step personal-info">
-      <h2>Informazioni Personali</h2>
-      <div className="input-group">
-        <input
-          type="text"
-          placeholder="Nome"
-          value={formData.name}
-          onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-          required
-        />
-      </div>
-      <div className="input-group">
-        <input
-          type="text"
-          placeholder="Cognome"
-          value={formData.surname}
-          onChange={(e) => setFormData(prev => ({ ...prev, surname: e.target.value }))}
-          required
-        />
-      </div>
-      <div className="input-group">
-        <input
-          type="number"
-          placeholder="Numero Tavolo"
-          value={formData.tableNumber}
-          onChange={(e) => setFormData(prev => ({ ...prev, tableNumber: e.target.value }))}
-          required
-        />
-      </div>
-      <button 
-        className="button-primary"
-        onClick={() => setCurrentStep('menu')}
-        disabled={!formData.name || !formData.surname || !formData.tableNumber}
-      >
-        Continua al Menu
-      </button>
+  // Nel componente PersonalInfoStep, modifica gli input così:
+
+const PersonalInfoStep = () => (
+  <div className="form-step personal-info">
+    <h2>Informazioni Personali</h2>
+    <div className="input-group">
+      <input
+        type="text"
+        placeholder="Nome"
+        value={formData.name}
+        onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+        required
+        autoComplete="off"
+        autoCorrect="off"
+        spellCheck="false"
+        // Previene lo zoom automatico su iOS
+        style={{ fontSize: '16px' }}
+      />
     </div>
-  );
+    <div className="input-group">
+      <input
+        type="text"
+        placeholder="Cognome"
+        value={formData.surname}
+        onChange={(e) => setFormData(prev => ({ ...prev, surname: e.target.value }))}
+        required
+        autoComplete="off"
+        autoCorrect="off"
+        spellCheck="false"
+        style={{ fontSize: '16px' }}
+      />
+    </div>
+    <div className="input-group">
+      <input
+        type="number"
+        inputMode="numeric"
+        pattern="[0-9]*"
+        placeholder="Numero Tavolo"
+        value={formData.tableNumber}
+        onChange={(e) => setFormData(prev => ({ ...prev, tableNumber: e.target.value }))}
+        required
+        style={{ fontSize: '16px' }}
+      />
+    </div>
+    <button 
+      className="button-primary"
+      onClick={() => setCurrentStep('menu')}
+      disabled={!formData.name || !formData.surname || !formData.tableNumber}
+    >
+      Continua al Menu
+    </button>
+  </div>
+);
 
   const MenuStep = () => (
     <div className="form-step menu-section">
