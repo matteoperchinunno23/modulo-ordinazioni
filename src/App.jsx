@@ -7,7 +7,7 @@ const App = () => {
   return (
     <div className="app">
       <header>
-        <h1>Ordina il tuo pasto</h1>
+        <h1>Ordina il cibo</h1>
       </header>
       <main>
         <OrderForm />

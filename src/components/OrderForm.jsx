@@ -1,6 +1,281 @@
 import React, { useState } from 'react';
 import './OrderForm.css';
 
+const OrderForm = () => {
+  const [formData, setFormData] = useState({
+    name: '',
+    surname: '',
+    tableNumber: '',
+    items: {},
+  });
+
+  const [currentStep, setCurrentStep] = useState('personal');
+
+  const updateQuantity = (itemId, delta) => {
+    setFormData(prev => {
+      const currentQuantity = prev.items[itemId] || 0;
+      const newQuantity = Math.max(0, currentQuantity + delta);
+      
+      return {
+        ...prev,
+        items: {
+          ...prev.items,
+          [itemId]: newQuantity
+        }
+      };
+    });
+  };
+
+  const calculateTotal = () => {
+    return Object.entries(formData.items).reduce((total, [itemId, quantity]) => {
+      const item = Object.values(menuItems)
+        .flatMap(category => category.items)
+        .find(item => item.id === itemId);
+      return total + (item?.price || 0) * quantity;
+    }, 0);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const orderData = {
+        ...formData,
+        total: calculateTotal(),
+        orderDate: new Date().toISOString()
+      };
+      
+      console.log('Ordine inviato:', orderData);
+      alert('Ordine inviato con successo!');
+      
+      setFormData({
+        name: '',
+        surname: '',
+        tableNumber: '',
+        items: {},
+      });
+      setCurrentStep('personal');
+    } catch (error) {
+      console.error('Errore nell\'invio dell\'ordine:', error);
+      alert('Errore nell\'invio dell\'ordine. Riprova.');
+    }
+  };
+
+  // Modifica solo il componente PersonalInfoStep
+
+const PersonalInfoStep = () => {
+  return (
+    <div className="personal-info" style={{ 
+      position: 'fixed',
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      backgroundColor: 'white',
+      zIndex: 1000,
+      overflowY: 'auto'
+    }}>
+      <div style={{ padding: '20px', maxWidth: '600px', margin: '0 auto' }}>
+        <h2>I tuoi Dettagli</h2>
+        <div style={{ marginBottom: '20px' }}>
+          <input
+            type="text"
+            placeholder="Nome"
+            value={formData.name}
+            onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+            style={{
+              width: '100%',
+              padding: '15px',
+              fontSize: '16px',
+              border: '2px solid #E8E8E8',
+              borderRadius: '10px',
+              marginBottom: '15px'
+            }}
+          />
+          <input
+            type="text"
+            placeholder="Cognome"
+            value={formData.surname}
+            onChange={(e) => setFormData(prev => ({ ...prev, surname: e.target.value }))}
+            style={{
+              width: '100%',
+              padding: '15px',
+              fontSize: '16px',
+              border: '2px solid #E8E8E8',
+              borderRadius: '10px',
+              marginBottom: '15px'
+            }}
+          />
+          <input
+            type="tel"
+            pattern="[0-9]*"
+            inputMode="numeric"
+            placeholder="Numero Tavolo"
+            value={formData.tableNumber}
+            onChange={(e) => setFormData(prev => ({ ...prev, tableNumber: e.target.value }))}
+            style={{
+              width: '100%',
+              padding: '15px',
+              fontSize: '16px',
+              border: '2px solid #E8E8E8',
+              borderRadius: '10px',
+              marginBottom: '15px'
+            }}
+          />
+        </div>
+        <button 
+          className="button-primary"
+          onClick={() => setCurrentStep('menu')}
+          disabled={!formData.name || !formData.surname || !formData.tableNumber}
+          style={{
+            width: '100%',
+            padding: '15px',
+            backgroundColor: '#FF7E45',
+            color: 'white',
+            border: 'none',
+            borderRadius: '10px',
+            fontSize: '16px',
+            fontWeight: 'bold'
+          }}
+        >
+          Continua
+        </button>
+      </div>
+    </div>
+  );
+};
+
+  const MenuStep = () => {
+    return (
+      <div className="menu-section">
+        {Object.entries(menuItems).map(([categoryId, category]) => (
+          <div key={categoryId} className="category-card">
+            <h3 className="category-title">{category.title}</h3>
+            <div className="items-grid">
+              {category.items.map(item => (
+                <div key={item.id} className="menu-item">
+                  <div className="item-details">
+                    <span className="item-name">{item.name}</span>
+                    <span className="item-price">{item.price.toFixed(2)}€</span>
+                  </div>
+                  <div className="quantity-controls">
+                    <button 
+                      type="button"
+                      className="quantity-button"
+                      onClick={() => updateQuantity(item.id, -1)}
+                      disabled={!formData.items[item.id]}
+                    >
+                      -
+                    </button>
+                    <span className="quantity-display">
+                      {formData.items[item.id] || 0}
+                    </span>
+                    <button 
+                      type="button"
+                      className="quantity-button"
+                      onClick={() => updateQuantity(item.id, 1)}
+                    >
+                      +
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
+        <div className="navigation-buttons">
+          <button 
+            type="button"
+            className="button-secondary"
+            onClick={() => setCurrentStep('personal')}
+          >
+            Indietro
+          </button>
+          <button 
+            type="button"
+            className="button-primary"
+            onClick={() => setCurrentStep('summary')}
+            disabled={Object.values(formData.items).every(v => !v)}
+          >
+            Riepilogo
+          </button>
+        </div>
+      </div>
+    );
+  };
+
+  const SummaryStep = () => {
+    const selectedItems = Object.entries(formData.items)
+      .filter(([_, quantity]) => quantity > 0)
+      .map(([itemId, quantity]) => {
+        const item = Object.values(menuItems)
+          .flatMap(category => category.items)
+          .find(item => item.id === itemId);
+        return { ...item, quantity };
+      });
+
+    return (
+      <div className="summary-section">
+        <h2>Riepilogo Ordine</h2>
+        <div className="summary-content">
+          <div className="customer-info">
+            <h3>Informazioni Cliente</h3>
+            <p><strong>Nome:</strong> {formData.name}</p>
+            <p><strong>Cognome:</strong> {formData.surname}</p>
+            <p><strong>Tavolo:</strong> {formData.tableNumber}</p>
+          </div>
+          
+          <div className="order-items">
+            <h3>Articoli Ordinati</h3>
+            {selectedItems.map(item => (
+              <div key={item.id} className="summary-item">
+                <div className="summary-item-info">
+                  <span className="item-name">{item.name}</span>
+                  <span className="item-quantity">x{item.quantity}</span>
+                </div>
+                <span className="item-total">
+                  {(item.price * item.quantity).toFixed(2)}€
+                </span>
+              </div>
+            ))}
+          </div>
+
+          <div className="order-total">
+            <span>Totale</span>
+            <span>{calculateTotal().toFixed(2)}€</span>
+          </div>
+        </div>
+
+        <div className="navigation-buttons">
+          <button 
+            type="button"
+            className="button-secondary"
+            onClick={() => setCurrentStep('menu')}
+          >
+            Modifica
+          </button>
+          <button 
+            type="button"
+            className="button-primary"
+            onClick={handleSubmit}
+          >
+            Conferma
+          </button>
+        </div>
+      </div>
+    );
+  };
+
+  return (
+    <div className="order-form">
+      {currentStep === 'personal' && <PersonalInfoStep />}
+      {currentStep === 'menu' && <MenuStep />}
+      {currentStep === 'summary' && <SummaryStep />}
+    </div>
+  );
+};
+
+export default OrderForm;
+
 const menuItems = {
   panini: {
     title: "Panini",
@@ -55,249 +330,3 @@ const menuItems = {
     ]
   }
 };
-
-const OrderForm = () => {
-  const [formData, setFormData] = useState({
-    name: '',
-    surname: '',
-    tableNumber: '',
-    items: {},
-  });
-
-  const [currentStep, setCurrentStep] = useState('personal');
-
-  const updateQuantity = (itemId, delta) => {
-    setFormData(prev => {
-      const currentQuantity = prev.items[itemId] || 0;
-      const newQuantity = Math.max(0, currentQuantity + delta);
-      
-      return {
-        ...prev,
-        items: {
-          ...prev.items,
-          [itemId]: newQuantity
-        }
-      };
-    });
-  };
-
-  const calculateTotal = () => {
-    return Object.entries(formData.items).reduce((total, [itemId, quantity]) => {
-      const item = Object.values(menuItems)
-        .flatMap(category => category.items)
-        .find(item => item.id === itemId);
-      return total + (item?.price || 0) * quantity;
-    }, 0);
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      // Qui inserire la logica per Airtable
-      const orderData = {
-        ...formData,
-        total: calculateTotal(),
-        orderDate: new Date().toISOString()
-      };
-      
-      console.log('Ordine inviato:', orderData);
-      alert('Ordine inviato con successo!');
-      
-      // Reset del form
-      setFormData({
-        name: '',
-        surname: '',
-        tableNumber: '',
-        items: {},
-      });
-      setCurrentStep('personal');
-    } catch (error) {
-      console.error('Errore nell\'invio dell\'ordine:', error);
-      alert('Errore nell\'invio dell\'ordine. Riprova.');
-    }
-  };
-
-// Modifica il PersonalInfoStep in OrderForm.jsx
-
-const PersonalInfoStep = () => {
-  return (
-    <div className="form-step personal-info">
-      <h2>Informazioni Personali</h2>
-      <form className="info-form" onSubmit={(e) => e.preventDefault()}>
-        <div className="input-container">
-          <label>
-            <span>Nome</span>
-            <input
-              type="text"
-              value={formData.name}
-              onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-              autoComplete="off"
-            />
-          </label>
-
-          <label>
-            <span>Cognome</span>
-            <input
-              type="text"
-              value={formData.surname}
-              onChange={(e) => setFormData(prev => ({ ...prev, surname: e.target.value }))}
-              autoComplete="off"
-            />
-          </label>
-
-          <label>
-            <span>Numero Tavolo</span>
-            <input
-              type="text"
-              inputMode="numeric"
-              pattern="[0-9]*"
-              value={formData.tableNumber}
-              onChange={(e) => setFormData(prev => ({ ...prev, tableNumber: e.target.value }))}
-              maxLength="3"
-            />
-          </label>
-        </div>
-        <button 
-          type="button"
-          className="button-primary"
-          onClick={() => setCurrentStep('menu')}
-          disabled={!formData.name || !formData.surname || !formData.tableNumber}
-        >
-          Continua al Menu
-        </button>
-      </form>
-    </div>
-  );
-};
-
-  const MenuStep = () => (
-    <div className="form-step menu-section">
-      <div className="menu-categories">
-        {Object.entries(menuItems).map(([categoryId, category]) => (
-          <div key={categoryId} className="category-card">
-            <h3 className="category-title">{category.title}</h3>
-            <div className="items-grid">
-              {category.items.map(item => (
-                <div key={item.id} className="menu-item">
-                  <div className="item-details">
-                    <span className="item-name">{item.name}</span>
-                    <span className="item-price">{item.price.toFixed(2)}€</span>
-                  </div>
-                  <div className="quantity-controls">
-                    <button 
-                      type="button"
-                      className="quantity-button"
-                      onClick={() => updateQuantity(item.id, -1)}
-                      disabled={!formData.items[item.id]}
-                    >
-                      -
-                    </button>
-                    <span className="quantity-display">
-                      {formData.items[item.id] || 0}
-                    </span>
-                    <button 
-                      type="button"
-                      className="quantity-button"
-                      onClick={() => updateQuantity(item.id, 1)}
-                    >
-                      +
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        ))}
-      </div>
-      <div className="navigation-buttons">
-        <button 
-          type="button"
-          className="button-secondary"
-          onClick={() => setCurrentStep('personal')}
-        >
-          Indietro
-        </button>
-        <button 
-          type="button"
-          className="button-primary"
-          onClick={() => setCurrentStep('summary')}
-          disabled={Object.values(formData.items).every(v => !v)}
-        >
-          Vai al Riepilogo
-        </button>
-      </div>
-    </div>
-  );
-
-  const SummaryStep = () => {
-    const selectedItems = Object.entries(formData.items)
-      .filter(([_, quantity]) => quantity > 0)
-      .map(([itemId, quantity]) => {
-        const item = Object.values(menuItems)
-          .flatMap(category => category.items)
-          .find(item => item.id === itemId);
-        return { ...item, quantity };
-      });
-
-    return (
-      <div className="form-step summary-section">
-        <h2>Riepilogo Ordine</h2>
-        <div className="summary-content">
-          <div className="customer-info">
-            <h3>Informazioni Cliente</h3>
-            <p><strong>Nome:</strong> {formData.name}</p>
-            <p><strong>Cognome:</strong> {formData.surname}</p>
-            <p><strong>Tavolo:</strong> {formData.tableNumber}</p>
-          </div>
-          
-          <div className="order-items">
-            <h3>Articoli Ordinati</h3>
-            {selectedItems.map(item => (
-              <div key={item.id} className="summary-item">
-                <div className="summary-item-info">
-                  <span className="item-name">{item.name}</span>
-                  <span className="item-quantity">x{item.quantity}</span>
-                </div>
-                <span className="item-total">
-                  {(item.price * item.quantity).toFixed(2)}€
-                </span>
-              </div>
-            ))}
-          </div>
-
-          <div className="order-total">
-            <span>Totale</span>
-            <span>{calculateTotal().toFixed(2)}€</span>
-          </div>
-        </div>
-
-        <div className="navigation-buttons">
-          <button 
-            type="button"
-            className="button-secondary"
-            onClick={() => setCurrentStep('menu')}
-          >
-            Modifica Ordine
-          </button>
-          <button 
-            type="button"
-            className="button-primary"
-            onClick={handleSubmit}
-          >
-            Conferma Ordine
-          </button>
-        </div>
-      </div>
-    );
-  };
-
-  return (
-    <div className="order-form">
-      {currentStep === 'personal' && <PersonalInfoStep />}
-      {currentStep === 'menu' && <MenuStep />}
-      {currentStep === 'summary' && <SummaryStep />}
-    </div>
-  );
-};
-
-export default OrderForm;
