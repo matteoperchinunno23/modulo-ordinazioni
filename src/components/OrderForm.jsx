@@ -117,50 +117,54 @@ const OrderForm = () => {
     }
   };
 
-// Nel file OrderForm.jsx, sostituisci il componente PersonalInfoStep con questo:
+// Nel file OrderForm.jsx, modifica il PersonalInfoStep così:
 
 const PersonalInfoStep = () => {
+  const handleChange = (e, field) => {
+    e.preventDefault();
+    setFormData(prev => ({
+      ...prev,
+      [field]: e.target.value
+    }));
+  };
+
   return (
     <div className="form-step personal-info">
       <h2>Informazioni Personali</h2>
       <div className="input-container">
-        <input
-          type="text"
-          placeholder="Nome"
-          value={formData.name}
-          onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-          onKeyPress={(e) => {
-            if (e.key === 'Enter') {
-              e.preventDefault();
-            }
-          }}
-          inputMode="text"
-        />
-        <input
-          type="text"
-          placeholder="Cognome"
-          value={formData.surname}
-          onChange={(e) => setFormData(prev => ({ ...prev, surname: e.target.value }))}
-          onKeyPress={(e) => {
-            if (e.key === 'Enter') {
-              e.preventDefault();
-            }
-          }}
-          inputMode="text"
-        />
-        <input
-          type="number"
-          placeholder="Numero Tavolo"
-          value={formData.tableNumber}
-          onChange={(e) => setFormData(prev => ({ ...prev, tableNumber: e.target.value }))}
-          onKeyPress={(e) => {
-            if (e.key === 'Enter') {
-              e.preventDefault();
-            }
-          }}
-          inputMode="numeric"
-          pattern="[0-9]*"
-        />
+        <label>
+          Nome
+          <input
+            type="text"
+            value={formData.name}
+            onChange={(e) => handleChange(e, 'name')}
+            name="name"
+            maxLength="30"
+          />
+        </label>
+
+        <label>
+          Cognome
+          <input
+            type="text"
+            value={formData.surname}
+            onChange={(e) => handleChange(e, 'surname')}
+            name="surname"
+            maxLength="30"
+          />
+        </label>
+
+        <label>
+          Numero Tavolo
+          <input
+            type="text"
+            value={formData.tableNumber}
+            onChange={(e) => handleChange(e, 'tableNumber')}
+            name="tableNumber"
+            pattern="\d*"
+            maxLength="3"
+          />
+        </label>
       </div>
       <button 
         type="button"
