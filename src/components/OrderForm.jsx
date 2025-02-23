@@ -117,63 +117,55 @@ const OrderForm = () => {
     }
   };
 
-// Nel file OrderForm.jsx, modifica il PersonalInfoStep così:
+// Modifica il PersonalInfoStep in OrderForm.jsx
 
 const PersonalInfoStep = () => {
-  const handleChange = (e, field) => {
-    e.preventDefault();
-    setFormData(prev => ({
-      ...prev,
-      [field]: e.target.value
-    }));
-  };
-
   return (
     <div className="form-step personal-info">
       <h2>Informazioni Personali</h2>
-      <div className="input-container">
-        <label>
-          Nome
-          <input
-            type="text"
-            value={formData.name}
-            onChange={(e) => handleChange(e, 'name')}
-            name="name"
-            maxLength="30"
-          />
-        </label>
+      <form className="info-form" onSubmit={(e) => e.preventDefault()}>
+        <div className="input-container">
+          <label>
+            <span>Nome</span>
+            <input
+              type="text"
+              value={formData.name}
+              onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+              autoComplete="off"
+            />
+          </label>
 
-        <label>
-          Cognome
-          <input
-            type="text"
-            value={formData.surname}
-            onChange={(e) => handleChange(e, 'surname')}
-            name="surname"
-            maxLength="30"
-          />
-        </label>
+          <label>
+            <span>Cognome</span>
+            <input
+              type="text"
+              value={formData.surname}
+              onChange={(e) => setFormData(prev => ({ ...prev, surname: e.target.value }))}
+              autoComplete="off"
+            />
+          </label>
 
-        <label>
-          Numero Tavolo
-          <input
-            type="text"
-            value={formData.tableNumber}
-            onChange={(e) => handleChange(e, 'tableNumber')}
-            name="tableNumber"
-            pattern="\d*"
-            maxLength="3"
-          />
-        </label>
-      </div>
-      <button 
-        type="button"
-        className="button-primary"
-        onClick={() => setCurrentStep('menu')}
-        disabled={!formData.name || !formData.surname || !formData.tableNumber}
-      >
-        Continua al Menu
-      </button>
+          <label>
+            <span>Numero Tavolo</span>
+            <input
+              type="text"
+              inputMode="numeric"
+              pattern="[0-9]*"
+              value={formData.tableNumber}
+              onChange={(e) => setFormData(prev => ({ ...prev, tableNumber: e.target.value }))}
+              maxLength="3"
+            />
+          </label>
+        </div>
+        <button 
+          type="button"
+          className="button-primary"
+          onClick={() => setCurrentStep('menu')}
+          disabled={!formData.name || !formData.surname || !formData.tableNumber}
+        >
+          Continua al Menu
+        </button>
+      </form>
     </div>
   );
 };
